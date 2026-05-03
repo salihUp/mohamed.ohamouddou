@@ -1,0 +1,88 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Locale } from '~/i18n';
+import { localizedPath, tString } from '~/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<section class="cta-strip">
+  <div class="container-prose cta-inner" data-reveal>
+    <div class="cta-text">
+      <p class="eyebrow">{tString(locale, 'home.cta.eyebrow')}</p>
+      <h2 class="cta-title">
+        <span>{tString(locale, 'home.cta.title')}</span>
+        <span class="dot" aria-hidden="true">.</span>
+      </h2>
+      <p class="cta-lead">{tString(locale, 'home.cta.lead')}</p>
+    </div>
+    <a class="btn btn-filled cta-button" href={localizedPath('/about#contact', locale)}>
+      <span>{tString(locale, 'home.cta.button')}</span>
+      <Icon name="lucide:arrow-up-right" width="16" height="16" />
+    </a>
+  </div>
+</section>
+
+<style>
+  .cta-strip {
+    margin-top: clamp(2rem, 6vw, 4rem);
+    padding-block: clamp(3rem, 7vw, 5rem);
+    background: var(--color-ink);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-strip::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 50%,
+      color-mix(in srgb, var(--color-accent) 30%, transparent),
+      transparent 55%);
+    pointer-events: none;
+  }
+  .cta-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .cta-text { max-width: 38rem; }
+  .cta-title {
+    margin: 0.5rem 0 0.6rem;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    color: #fff;
+  }
+  .cta-title .dot { color: var(--color-accent); }
+  .cta-lead {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .eyebrow {
+    color: var(--color-accent);
+    margin: 0;
+  }
+  .cta-button {
+    background: #fff;
+    color: var(--color-ink);
+    border-color: #fff;
+    font-weight: 600;
+    padding: 0.85rem 1.4rem;
+  }
+  .cta-button:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #fff;
+  }
+</style>

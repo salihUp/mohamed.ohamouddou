@@ -32,8 +32,8 @@ const links = [
   { key: 'nav.home', path: '/' },
   { key: 'nav.publications', path: '/publications' },
   { key: 'nav.teaching', path: '/teaching' },
-  { key: 'nav.activities', path: '/activities' },
-  { key: 'nav.blog', path: '/blog' },
+  { key: 'nav.activities', path: '/activities', disabled: true },
+  { key: 'nav.blog', path: '/blog', disabled: true },
   { key: 'nav.about', path: '/about' },
 ];
 const contactHref = localizedPath('/about#contact', locale);
@@ -48,6 +48,13 @@ const contactHref = localizedPath('/about#contact', locale);
     <nav class="nav-center" aria-label={tString(locale, 'nav.menu_open')}>
       {links.map((l) => {
         const href = localizedPath(l.path, locale);
+        if (l.disabled) {
+          return (
+            <span class="nav-link-disabled" aria-disabled="true" title="Bientôt disponible">
+              {tString(locale, l.key)}
+            </span>
+          );
+        }
         return (
           <NavLink href={href} active={isActive(href)}>
             {tString(locale, l.key)}
@@ -72,6 +79,13 @@ const contactHref = localizedPath('/about#contact', locale);
     <div class="container-prose nav-mobile-inner">
       {links.map((l) => {
         const href = localizedPath(l.path, locale);
+        if (l.disabled) {
+          return (
+            <span class="mobile-link mobile-link-disabled" aria-disabled="true">
+              {tString(locale, l.key)}
+            </span>
+          );
+        }
         return (
           <a href={href} class={`mobile-link${isActive(href) ? ' active' : ''}`}>
             {tString(locale, l.key)}
@@ -86,6 +100,8 @@ const contactHref = localizedPath('/about#contact', locale);
       </div>
     </div>
   </div>
+
+  <span class="scroll-progress" data-scroll-progress aria-hidden="true"></span>
 </header>
 
 <style>
@@ -101,6 +117,18 @@ const contactHref = localizedPath('/about#contact', locale);
   }
   .navbar.scrolled {
     border-bottom-color: var(--color-line);
+  }
+  .scroll-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--scroll, 0%);
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-strong));
+    border-radius: 0 999px 999px 0;
+    transition: width 80ms linear;
+    will-change: width;
+    pointer-events: none;
   }
   .nav-inner {
     display: grid;
@@ -132,6 +160,41 @@ const contactHref = localizedPath('/about#contact', locale);
     background: var(--color-bg);
     color: var(--color-ink);
     justify-self: end;
+  }
+
+  .nav-link-disabled {
+    font-size: 0.92rem;
+    color: var(--color-muted);
+    padding: 0.4rem 0;
+    cursor: not-allowed;
+    user-select: none;
+    position: relative;
+  }
+  .nav-link-disabled::after {
+    content: 'soon';
+    position: absolute;
+    top: -0.55rem;
+    right: -0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent-strong);
+    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-bg));
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, var(--color-line));
+    border-radius: 999px;
+    padding: 0.05rem 0.32rem;
+    line-height: 1.2;
+  }
+  .mobile-link-disabled {
+    color: var(--color-muted);
+    cursor: not-allowed;
+    user-select: none;
+  }
+  .mobile-link-disabled::after {
+    content: ' · bientôt';
+    color: var(--color-accent-strong);
+    font-size: 0.78rem;
   }
 
   .nav-mobile {
@@ -180,12 +243,22 @@ const contactHref = localizedPath('/about#contact', locale);
   }
 
   const navbar = document.querySelector('.navbar') as HTMLElement | null;
+  const progress = document.querySelector('[data-scroll-progress]') as HTMLElement | null;
+
   if (navbar) {
     const onScroll = () => {
-      if (window.scrollY > 4) navbar.classList.add('scrolled');
+      const y = window.scrollY;
+      if (y > 4) navbar.classList.add('scrolled');
       else navbar.classList.remove('scrolled');
+
+      if (progress) {
+        const docH = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = docH > 0 ? Math.min(100, Math.max(0, (y / docH) * 100)) : 0;
+        progress.style.setProperty('--scroll', `${pct}%`);
+      }
     };
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
     onScroll();
   }
 </script>

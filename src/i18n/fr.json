@@ -30,6 +30,20 @@
   "home.latest.activity": "Dernières activités",
   "home.latest.activity.cta": "Toutes les activités",
 
+  "home.highlights.publications": "Publications",
+  "home.highlights.courses": "Cours actifs",
+  "home.highlights.years": "Années d'enseignement",
+  "home.highlights.areas": "Domaines",
+
+  "home.focus.eyebrow": "Axes de travail",
+  "home.focus.title": "Domaines de recherche",
+  "home.focus.lead": "Mon travail s'inscrit à l'intersection entre l'apprentissage automatique et les systèmes contraints — concevoir des modèles d'IA qui tiennent dans un capteur, un microcontrôleur ou un dispositif périphérique.",
+
+  "home.cta.eyebrow": "Collaboration",
+  "home.cta.title": "Travaillons ensemble",
+  "home.cta.lead": "Encadrement, collaboration de recherche, intervention pédagogique ou consultation technique — discutons-en.",
+  "home.cta.button": "Me contacter",
+
   "publications.title": "Publications",
   "publications.lead": "Articles, communications, et travaux de recherche autour des systèmes embarqués et de l'IA.",
   "publications.eyebrow": "Recherche",

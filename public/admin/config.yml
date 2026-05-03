@@ -1,27 +1,24 @@
-# Sveltia CMS configuration for Mohamed Ohamouddou's portfolio.
+# Sveltia CMS — LOCAL-ONLY mode.
 #
-# In LOCAL mode (recommended during development):
-#   - Run `npm run dev` in one terminal.
-#   - Run `npm run cms` (or `npx decap-server`) in another.
-#   - Open http://localhost:4321/admin/  → edits write straight to disk.
+# How to edit content:
+#   Terminal 1:  npm run dev      (Astro dev server on :4321)
+#   Terminal 2:  npm run cms      (decap-server proxy on :8081)
+#   Browser:     http://localhost:4321/admin/   → edits write straight to disk.
 #
-# In PRODUCTION (after deploying to GitHub Pages):
-#   1. Push the site to a GitHub repository.
-#   2. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
-#        Homepage URL:           https://<USERNAME>.github.io/<REPO>/
-#        Authorization callback: https://<USERNAME>.github.io/<REPO>/admin/
-#   3. Replace `<USERNAME>/<REPO>` and `<GITHUB_OAUTH_CLIENT_ID>` below.
-#   4. Push again. /admin/ now logs in via GitHub PKCE and commits directly.
+# After editing, commit + push to publish:
+#   git add . && git commit -m "content: ..." && git push
+#
+# Production /admin/ on GitHub Pages will NOT work for editing — it's local-only.
+# To enable production /admin/ later, set up a Cloudflare Worker auth proxy
+# (see https://github.com/sveltia/sveltia-cms-auth) and re-add a backend block.
 
+local_backend: true
+
+# Required by Sveltia even in local mode (just declares the repo for git operations).
 backend:
   name: github
   repo: salihUp/mohamed.ohamouddou
   branch: main
-  auth_type: pkce
-  client_id: Ov23liFAs276niZKWtyn
-
-# Re-enable for local-only edits (npm run cms in another terminal).
-# local_backend: true
 
 media_folder: public/images
 public_folder: /images

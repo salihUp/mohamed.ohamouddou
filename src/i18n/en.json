@@ -30,6 +30,20 @@
   "home.latest.activity": "Latest activity",
   "home.latest.activity.cta": "All activities",
 
+  "home.highlights.publications": "Publications",
+  "home.highlights.courses": "Active courses",
+  "home.highlights.years": "Years teaching",
+  "home.highlights.areas": "Areas",
+
+  "home.focus.eyebrow": "Focus",
+  "home.focus.title": "Research areas",
+  "home.focus.lead": "My work sits at the intersection of machine learning and resource-constrained systems — designing AI models that fit on sensors, microcontrollers, and edge devices.",
+
+  "home.cta.eyebrow": "Collaboration",
+  "home.cta.title": "Let's work together",
+  "home.cta.lead": "Supervision, research collaboration, teaching contributions, or technical consulting — let's talk.",
+  "home.cta.button": "Get in touch",
+
   "publications.title": "Publications",
   "publications.lead": "Articles, conference papers, and research output around embedded systems and AI.",
   "publications.eyebrow": "Research",

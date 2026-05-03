@@ -1,6 +1,9 @@
 ---
 import Base from '~/layouts/Base.astro';
 import Hero from '~/components/hero/Hero.astro';
+import Highlights from '~/components/home/Highlights.astro';
+import ResearchAreas from '~/components/home/ResearchAreas.astro';
+import CTAStrip from '~/components/home/CTAStrip.astro';
 import { localizedPath, tString } from '~/i18n';
 
 const locale = 'en' as const;
@@ -19,4 +22,7 @@ const locale = 'en' as const;
     portrait={`${import.meta.env.BASE_URL}images/portrait.png`}
     portraitAlt={tString(locale, 'hero.portrait.alt')}
   />
+  <Highlights locale={locale} />
+  <ResearchAreas locale={locale} />
+  <CTAStrip locale={locale} />
 </Base>
