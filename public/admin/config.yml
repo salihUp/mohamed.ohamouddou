@@ -15,19 +15,19 @@
 
 backend:
   name: github
-  repo: <USERNAME>/<REPO>
+  repo: salihUp/mohamed.ohamouddou
   branch: main
   auth_type: pkce
-  client_id: <GITHUB_OAUTH_CLIENT_ID>
+  client_id: Ov23liFAs276niZKWtyn
 
-# Comment this line out in production once OAuth is wired up.
-local_backend: true
+# Re-enable for local-only edits (npm run cms in another terminal).
+# local_backend: true
 
 media_folder: public/images
 public_folder: /images
 
-site_url: https://example.github.io
-display_url: https://example.github.io
+site_url: https://salihup.github.io/mohamed.ohamouddou
+display_url: https://salihup.github.io/mohamed.ohamouddou
 logo_url: /favicon.svg
 
 collections:
