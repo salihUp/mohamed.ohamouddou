@@ -1,0 +1,191 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Locale } from '~/i18n';
+import { localizedPath, tString } from '~/i18n';
+import Logo from './Logo.astro';
+import NavLink from './NavLink.astro';
+import LangSwitcher from './LangSwitcher.astro';
+
+interface Props {
+  locale: Locale;
+  pathname: string;
+}
+
+const { locale, pathname } = Astro.props;
+
+function isActive(href: string): boolean {
+  const base = import.meta.env.BASE_URL ?? '/';
+  const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+  let p = pathname;
+  if (cleanBase && p.startsWith(cleanBase)) p = p.slice(cleanBase.length);
+  if (!p.startsWith('/')) p = `/${p}`;
+
+  let h = href;
+  if (cleanBase && h.startsWith(cleanBase)) h = h.slice(cleanBase.length);
+  if (!h.startsWith('/')) h = `/${h}`;
+
+  if (h === '/' || h === '/en') return p === '/' || p === '/en' || p === '/en/';
+  return p === h || p.startsWith(`${h}/`);
+}
+
+const links = [
+  { key: 'nav.home', path: '/' },
+  { key: 'nav.publications', path: '/publications' },
+  { key: 'nav.teaching', path: '/teaching' },
+  { key: 'nav.activities', path: '/activities' },
+  { key: 'nav.blog', path: '/blog' },
+  { key: 'nav.about', path: '/about' },
+];
+const contactHref = localizedPath('/about#contact', locale);
+---
+
+<header class="navbar">
+  <div class="container-prose nav-inner">
+    <div class="nav-left">
+      <Logo locale={locale} />
+    </div>
+
+    <nav class="nav-center" aria-label={tString(locale, 'nav.menu_open')}>
+      {links.map((l) => {
+        const href = localizedPath(l.path, locale);
+        return (
+          <NavLink href={href} active={isActive(href)}>
+            {tString(locale, l.key)}
+          </NavLink>
+        );
+      })}
+    </nav>
+
+    <div class="nav-right">
+      <LangSwitcher locale={locale} pathname={pathname} />
+      <a class="icon-pill" href={contactHref} aria-label={tString(locale, 'nav.contact')}>
+        <Icon name="lucide:message-circle" width="18" height="18" />
+      </a>
+    </div>
+
+    <button class="nav-burger" type="button" aria-label={tString(locale, 'nav.menu_open')} data-burger>
+      <Icon name="lucide:menu" width="22" height="22" />
+    </button>
+  </div>
+
+  <div class="nav-mobile" data-mobile-panel hidden>
+    <div class="container-prose nav-mobile-inner">
+      {links.map((l) => {
+        const href = localizedPath(l.path, locale);
+        return (
+          <a href={href} class={`mobile-link${isActive(href) ? ' active' : ''}`}>
+            {tString(locale, l.key)}
+          </a>
+        );
+      })}
+      <div class="nav-mobile-footer">
+        <LangSwitcher locale={locale} pathname={pathname} />
+        <a class="icon-pill" href={contactHref} aria-label={tString(locale, 'nav.contact')}>
+          <Icon name="lucide:message-circle" width="18" height="18" />
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 180ms ease;
+  }
+  .navbar.scrolled {
+    border-bottom-color: var(--color-line);
+  }
+  .nav-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    height: 4.5rem;
+    gap: 1.5rem;
+  }
+  .nav-left { justify-self: start; }
+  .nav-center {
+    display: none;
+    justify-self: center;
+    gap: 1.6rem;
+  }
+  .nav-right {
+    display: none;
+    justify-self: end;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .nav-burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-line);
+    background: var(--color-bg);
+    color: var(--color-ink);
+    justify-self: end;
+  }
+
+  .nav-mobile {
+    display: block;
+    border-top: 1px solid var(--color-line);
+    background: var(--color-bg);
+  }
+  .nav-mobile[hidden] { display: none; }
+  .nav-mobile-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-block: 1rem;
+  }
+  .mobile-link {
+    padding: 0.6rem 0;
+    font-size: 1rem;
+    color: var(--color-ink-soft);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .mobile-link.active { color: var(--color-accent-strong); }
+  .nav-mobile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.75rem;
+  }
+
+  @media (min-width: 768px) {
+    .nav-center { display: inline-flex; }
+    .nav-right { display: inline-flex; }
+    .nav-burger { display: none; }
+    .nav-mobile { display: none !important; }
+  }
+</style>
+
+<script>
+  const burger = document.querySelector('[data-burger]') as HTMLButtonElement | null;
+  const panel = document.querySelector('[data-mobile-panel]') as HTMLElement | null;
+  if (burger && panel) {
+    burger.addEventListener('click', () => {
+      const isHidden = panel.hasAttribute('hidden');
+      if (isHidden) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+    });
+  }
+
+  const navbar = document.querySelector('.navbar') as HTMLElement | null;
+  if (navbar) {
+    const onScroll = () => {
+      if (window.scrollY > 4) navbar.classList.add('scrolled');
+      else navbar.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+</script>

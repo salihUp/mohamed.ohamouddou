@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f3f0ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <text x="80" y="180" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="64" fill="#0b0b0f">Mohamed Ohamouddou</text>
+  <text x="80" y="280" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="120" fill="#0b0b0f" letter-spacing="-4">
+    <tspan fill="#7c5cff">Embed</tspan>ded
+  </text>
+  <text x="80" y="410" font-family="ui-sans-serif, system-ui, sans-serif" font-weight="800" font-size="120" fill="#0b0b0f" letter-spacing="-4">Systems &amp; AI</text>
+  <text x="80" y="540" font-family="ui-sans-serif, system-ui, sans-serif" font-size="32" fill="#4a4a52">Adjunct lecturer · Embedded AI researcher</text>
+</svg>

@@ -1,0 +1,59 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { tString } from '~/i18n';
+import { formatDate, pickLocalized } from '~/lib/format';
+
+interface Props {
+  entry: CollectionEntry<'activities'>;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const d = entry.data;
+const title = pickLocalized(d, 'title', locale);
+const notes = pickLocalized(d, 'notes', locale);
+---
+
+<article class="card activity">
+  <header class="activity-head">
+    <span class="chip">{tString(locale, `activities.type.${d.type}`)}</span>
+    <span class="chip chip-accent">{tString(locale, `activities.role.${d.role}`)}</span>
+    <span class="date">{formatDate(d.date, locale)}</span>
+  </header>
+  <h3 class="activity-title">
+    {d.url ? (
+      <a href={d.url} target="_blank" rel="noopener noreferrer" class="underline-grow">{title}</a>
+    ) : (
+      title
+    )}
+  </h3>
+  <p class="activity-meta">
+    <Icon name="lucide:map-pin" width="14" height="14" />
+    <span>{d.location}</span>
+  </p>
+  {notes && <p class="activity-notes">{notes}</p>}
+</article>
+
+<style>
+  .activity { display: flex; flex-direction: column; gap: 0.5rem; }
+  .activity-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .date {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin-left: auto;
+    letter-spacing: 0.04em;
+  }
+  .activity-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin: 0; }
+  .activity-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .activity-notes { font-size: 0.95rem; color: var(--color-ink-soft); line-height: 1.55; margin: 0; }
+</style>

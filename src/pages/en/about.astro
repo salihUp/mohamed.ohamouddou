@@ -1,0 +1,119 @@
+---
+import { Icon } from 'astro-icon/components';
+import Base from '~/layouts/Base.astro';
+import Section from '~/components/ui/Section.astro';
+import { tArray, tString } from '~/i18n';
+
+const locale = 'en' as const;
+const research = tArray(locale, 'about.research.items');
+
+const links = [
+  { icon: 'lucide:mail', label: tString(locale, 'about.contact.email'), href: 'mailto:ohamouddou3@gmail.com' },
+  { icon: 'simple-icons:googlescholar', label: tString(locale, 'about.contact.scholar'), href: 'https://scholar.google.com/citations?user=sC7xPz0AAAAJ&hl=en' },
+  { icon: 'simple-icons:linkedin', label: tString(locale, 'about.contact.linkedin'), href: 'https://linkedin.com/in/mohamed-ohamouddou-641246131' },
+  { icon: 'simple-icons:orcid', label: tString(locale, 'about.contact.orcid'), href: 'https://orcid.org/0009-0000-9369-2891' },
+];
+---
+
+<Base
+  locale={locale}
+  title={`${tString(locale, 'about.title')} — Mohamed Ohamouddou`}
+  description={tString(locale, 'about.lead')}
+>
+  <Section
+    eyebrow={tString(locale, 'about.eyebrow')}
+    title={tString(locale, 'about.title')}
+    lead={tString(locale, 'about.lead')}
+  >
+    <div class="about-grid">
+      <div class="bio">
+        <p>{tString(locale, 'about.bio')}</p>
+
+        <h3 class="block-title">{tString(locale, 'about.research.title')}</h3>
+        <ul class="research">
+          {research.map((r) => (
+            <li>
+              <Icon name="lucide:check" width="14" height="14" />
+              <span>{r}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <aside class="contact card" id="contact">
+        <h3 class="block-title">{tString(locale, 'about.contact.title')}</h3>
+        <ul class="contact-list">
+          {links.map((l) => (
+            <li>
+              <a href={l.href} target={l.href.startsWith('http') ? '_blank' : undefined} rel={l.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+                <Icon name={l.icon} width="16" height="16" />
+                <span>{l.label}</span>
+                <Icon name="lucide:arrow-up-right" width="14" height="14" class="arrow" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  @media (min-width: 800px) {
+    .about-grid { grid-template-columns: 1.4fr 1fr; gap: 2rem; }
+  }
+  .bio p {
+    color: var(--color-ink-soft);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    margin: 0 0 1.5rem;
+  }
+  .block-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+  }
+  .research {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .research li {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+  }
+  .research li :global(svg) {
+    margin-top: 0.25rem;
+    color: var(--color-accent-strong);
+    flex-shrink: 0;
+  }
+  .contact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.4rem;
+  }
+  .contact-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.55rem 0.65rem;
+    border-radius: 0.6rem;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+    transition: background 180ms ease;
+  }
+  .contact-list a:hover { background: var(--color-bg-soft); }
+  .contact-list .arrow { margin-left: auto; color: var(--color-muted); }
+</style>

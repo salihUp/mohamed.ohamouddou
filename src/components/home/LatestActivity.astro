@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { localizedPath, tString } from '~/i18n';
+import Section from '~/components/ui/Section.astro';
+import ActivityCard from '~/components/cards/ActivityCard.astro';
+
+interface Props {
+  locale: Locale;
+  limit?: number;
+}
+
+const { locale, limit = 3 } = Astro.props;
+
+const all = await getCollection('activities');
+const items = [...all]
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, limit);
+---
+
+{items.length > 0 && (
+  <Section
+    eyebrow={tString(locale, 'activities.eyebrow')}
+    title={tString(locale, 'home.latest.activity')}
+    ctaLabel={tString(locale, 'home.latest.activity.cta')}
+    ctaHref={localizedPath('/activities', locale)}
+  >
+    <div class="grid">
+      {items.map((entry) => <ActivityCard entry={entry} locale={locale} />)}
+    </div>
+  </Section>
+)}
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
+  }
+</style>

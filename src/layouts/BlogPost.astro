@@ -1,0 +1,95 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { Locale } from '~/i18n';
+import { localizedPath, tString } from '~/i18n';
+import { formatDate } from '~/lib/format';
+import Base from './Base.astro';
+import { blogPostingJsonLd } from '~/lib/seo';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  date: Date;
+  excerpt: string;
+  tags: string[];
+}
+
+const { locale, title, date, excerpt, tags } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const ld = blogPostingJsonLd({
+  title,
+  url,
+  datePublished: new Date(date).toISOString(),
+  description: excerpt,
+  author: 'Mohamed Ohamouddou',
+  inLanguage: locale,
+});
+---
+
+<Base locale={locale} title={`${title} — Mohamed Ohamouddou`} description={excerpt}>
+  <article class="container-prose post">
+    <a class="back" href={localizedPath('/blog', locale)}>
+      <Icon name="lucide:arrow-left" width="14" height="14" />
+      <span>{tString(locale, 'blog.back')}</span>
+    </a>
+
+    <header class="post-head">
+      <p class="post-meta">
+        <time datetime={new Date(date).toISOString()}>{formatDate(date, locale)}</time>
+        {tags.length > 0 && (
+          <>
+            <span class="dot">·</span>
+            <ul class="tags">
+              {tags.map((t) => <li class="chip">#{t}</li>)}
+            </ul>
+          </>
+        )}
+      </p>
+      <h1 class="post-title display-lg">{title}</h1>
+      <p class="post-excerpt">{excerpt}</p>
+    </header>
+
+    <div class="prose-blog">
+      <slot />
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={ld} />
+</Base>
+
+<style>
+  .post {
+    padding-top: 2.5rem;
+    max-width: 46rem;
+  }
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--color-ink-soft);
+    font-size: 0.88rem;
+    margin-bottom: 1.5rem;
+  }
+  .back:hover { color: var(--color-ink); }
+  .post-head { margin-bottom: 2.25rem; }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    margin: 0 0 0.75rem;
+    letter-spacing: 0.04em;
+  }
+  .dot { color: var(--color-line); }
+  .tags { list-style: none; display: inline-flex; gap: 0.35rem; padding: 0; margin: 0; }
+  .post-title { margin: 0 0 0.75rem; }
+  .post-excerpt {
+    color: var(--color-ink-soft);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>

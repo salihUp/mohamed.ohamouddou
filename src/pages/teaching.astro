@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '~/layouts/Base.astro';
+import Section from '~/components/ui/Section.astro';
+import CourseCard from '~/components/cards/CourseCard.astro';
+import { tString } from '~/i18n';
+
+const locale = 'fr' as const;
+
+const all = await getCollection('courses');
+const sorted = [...all].sort((a, b) => b.data.year_start - a.data.year_start);
+---
+
+<Base
+  locale={locale}
+  title={`${tString(locale, 'teaching.title')} — Mohamed Ohamouddou`}
+  description={tString(locale, 'teaching.lead')}
+>
+  <Section
+    eyebrow={tString(locale, 'teaching.eyebrow')}
+    title={tString(locale, 'teaching.title')}
+    lead={tString(locale, 'teaching.lead')}
+  >
+    {sorted.length === 0 ? (
+      <p class="empty">{tString(locale, 'teaching.empty')}</p>
+    ) : (
+      <div class="grid">
+        {sorted.map((entry) => <CourseCard entry={entry} locale={locale} />)}
+      </div>
+    )}
+  </Section>
+</Base>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
+  }
+  .empty {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    border: 1px dashed var(--color-line);
+    padding: 1.25rem;
+    border-radius: var(--radius-card);
+  }
+</style>

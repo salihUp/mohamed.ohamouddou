@@ -1,0 +1,71 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { tString } from '~/i18n';
+import { pickLocalized } from '~/lib/format';
+
+interface Props {
+  entry: CollectionEntry<'courses'>;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const d = entry.data;
+const title = pickLocalized(d, 'title', locale);
+const description = pickLocalized(d, 'description', locale);
+const yearRange = d.year_end ? `${d.year_start}–${d.year_end}` : `${d.year_start}–${tString(locale, 'teaching.present')}`;
+---
+
+<article class="card course">
+  <header class="course-head">
+    <span class="chip">{d.institution}</span>
+    <span class="chip chip-accent">{d.level}</span>
+    <span class="year">{yearRange}</span>
+  </header>
+  <h3 class="course-title">{title}</h3>
+  <p class="course-meta">{tString(locale, `teaching.semester.${d.semester}`)}</p>
+  {description && <p class="course-desc">{description}</p>}
+  {d.syllabus_url && (
+    <a class="course-link" href={d.syllabus_url} target="_blank" rel="noopener noreferrer">
+      <Icon name="simple-icons:googledrive" width="14" height="14" />
+      <span>{tString(locale, 'teaching.syllabus')}</span>
+      <Icon name="lucide:arrow-up-right" width="13" height="13" class="arrow" />
+    </a>
+  )}
+</article>
+
+<style>
+  .course { display: flex; flex-direction: column; gap: 0.5rem; }
+  .course-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .year {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin-left: auto;
+    letter-spacing: 0.04em;
+  }
+  .course-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin: 0; }
+  .course-meta { font-size: 0.85rem; color: var(--color-muted); margin: 0; }
+  .course-desc { font-size: 0.95rem; color: var(--color-ink-soft); line-height: 1.55; margin: 0; }
+  .course-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.7rem 0.35rem 0.55rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    color: var(--color-ink);
+    font-size: 0.85rem;
+    font-weight: 500;
+    width: max-content;
+    transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+  }
+  .course-link:hover {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: #fff;
+  }
+  .course-link .arrow { margin-left: 0.05rem; opacity: 0.7; }
+</style>

@@ -1,0 +1,48 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { pickLocalized } from '~/lib/format';
+
+interface Props {
+  entry: CollectionEntry<'projects'>;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const d = entry.data;
+const title = pickLocalized(d, 'title', locale);
+const description = pickLocalized(d, 'description', locale);
+---
+
+<article class="card project">
+  <h3 class="project-title">{title}</h3>
+  <p class="project-desc">{description}</p>
+  {d.tech.length > 0 && (
+    <ul class="tech">
+      {d.tech.map((t) => <li class="chip">{t}</li>)}
+    </ul>
+  )}
+  <div class="project-links">
+    {d.repo && (
+      <a class="chip" href={d.repo} target="_blank" rel="noopener noreferrer">
+        <Icon name="simple-icons:github" width="13" height="13" />
+        <span>Repo</span>
+      </a>
+    )}
+    {d.demo && (
+      <a class="chip chip-accent" href={d.demo} target="_blank" rel="noopener noreferrer">
+        <Icon name="lucide:external-link" width="13" height="13" />
+        <span>Demo</span>
+      </a>
+    )}
+  </div>
+</article>
+
+<style>
+  .project { display: flex; flex-direction: column; gap: 0.5rem; }
+  .project-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin: 0; }
+  .project-desc { font-size: 0.95rem; color: var(--color-ink-soft); line-height: 1.55; margin: 0; }
+  .tech { list-style: none; display: flex; gap: 0.35rem; padding: 0; margin: 0.4rem 0 0; flex-wrap: wrap; }
+  .project-links { display: flex; gap: 0.4rem; margin-top: 0.4rem; }
+</style>

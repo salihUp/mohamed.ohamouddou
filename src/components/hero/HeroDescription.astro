@@ -1,0 +1,18 @@
+---
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+
+<p class="lead">{text}</p>
+
+<style>
+  .lead {
+    color: var(--color-ink-soft);
+    font-size: clamp(1rem, 1.6vw, 1.125rem);
+    line-height: 1.55;
+    max-width: 44ch;
+    margin-top: 1.5rem;
+  }
+</style>

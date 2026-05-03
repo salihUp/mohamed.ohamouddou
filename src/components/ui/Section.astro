@@ -1,0 +1,62 @@
+---
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  lead?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  id?: string;
+}
+
+const { eyebrow, title, lead, ctaLabel, ctaHref, id } = Astro.props;
+---
+
+<section class="section" id={id}>
+  <div class="container-prose">
+    {(eyebrow || title || lead || ctaHref) && (
+      <header class="section-head" data-reveal>
+        <div>
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          {title && <h2 class="section-title display-lg">{title}</h2>}
+          {lead && <p class="section-lead">{lead}</p>}
+        </div>
+        {ctaHref && ctaLabel && (
+          <a class="btn btn-ghost section-cta" href={ctaHref}>
+            <span>{ctaLabel}</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        )}
+      </header>
+    )}
+    <div data-reveal style="--reveal-delay: 100ms">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding-block: clamp(3rem, 6vw, 5rem);
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .section-title {
+    margin: 0.4rem 0 0;
+  }
+  .section-lead {
+    color: var(--color-ink-soft);
+    font-size: 1.02rem;
+    margin: 0.6rem 0 0;
+    max-width: 60ch;
+    line-height: 1.55;
+  }
+  .section-cta {
+    align-self: end;
+  }
+</style>

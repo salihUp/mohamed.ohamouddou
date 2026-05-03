@@ -1,0 +1,41 @@
+---
+import type { Locale } from '~/i18n';
+import { LOCALES, switchLocalePath, tString } from '~/i18n';
+
+interface Props {
+  locale: Locale;
+  pathname: string;
+}
+
+const { locale, pathname } = Astro.props;
+const targets = LOCALES.filter((l) => l !== locale);
+---
+
+<div class="lang-switch" aria-label={tString(locale, 'lang.label')}>
+  {targets.map((t) => (
+    <a class="lang-link" href={switchLocalePath(pathname, t)} hreflang={t} lang={t}>
+      {t === 'en' ? tString(locale, 'lang.switch_to_en') : tString(locale, 'lang.switch_to_fr')}
+    </a>
+  ))}
+</div>
+
+<style>
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .lang-link {
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--color-ink-soft);
+    padding: 0.35rem 0.55rem;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    transition: border-color 180ms ease, color 180ms ease, background 180ms ease;
+  }
+  .lang-link:hover {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+</style>

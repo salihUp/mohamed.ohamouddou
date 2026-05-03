@@ -1,0 +1,134 @@
+---
+import { Icon } from 'astro-icon/components';
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { tString } from '~/i18n';
+import { joinAuthorsHTML, parseAuthors } from '~/lib/format';
+
+interface Props {
+  entry: CollectionEntry<'publications'>;
+  locale: Locale;
+}
+
+const { entry, locale } = Astro.props;
+const d = entry.data;
+const authors = joinAuthorsHTML(parseAuthors(d.authors));
+const abstract = locale === 'fr' ? d.abstract_fr : d.abstract_en;
+const scholarSearch = `https://scholar.google.com/scholar?q=${encodeURIComponent(d.title)}`;
+const primaryHref = d.url ?? (d.doi ? `https://doi.org/${d.doi}` : (d.pdf ?? d.arxiv ?? scholarSearch));
+
+const links: { icon: string; label: string; href: string }[] = [];
+if (d.pdf) links.push({ icon: 'lucide:file-text', label: 'PDF', href: d.pdf });
+if (d.doi) links.push({ icon: 'lucide:link-2', label: 'DOI', href: `https://doi.org/${d.doi}` });
+if (d.arxiv) links.push({ icon: 'lucide:book-open', label: 'arXiv', href: d.arxiv });
+if (d.code) links.push({ icon: 'lucide:code-2', label: 'Code', href: d.code });
+if (d.slides) links.push({ icon: 'lucide:presentation', label: 'Slides', href: d.slides });
+---
+
+<article class="card pub">
+  <header class="pub-head">
+    <span class="chip">{tString(locale, `publications.type.${d.type}`)}</span>
+    <span class="year">{d.year}</span>
+  </header>
+
+  <h3 class="pub-title">
+    {primaryHref ? (
+      <a href={primaryHref} target="_blank" rel="noopener noreferrer" class="underline-grow">
+        {d.title}
+      </a>
+    ) : (
+      d.title
+    )}
+  </h3>
+
+  <p class="pub-authors" set:html={authors}></p>
+
+  {d.venue && (
+    <p class="pub-venue">
+      <em>{d.venue}</em>{d.volume && <span>, vol. {d.volume}</span>}{d.number && <span> ({d.number})</span>}{d.pages && <span>, pp. {d.pages}</span>}.
+    </p>
+  )}
+
+  {abstract && (
+    <details class="pub-abstract">
+      <summary>{tString(locale, 'publications.abstract')}</summary>
+      <p>{abstract}</p>
+    </details>
+  )}
+
+  {links.length > 0 && (
+    <ul class="pub-links">
+      {links.map((l) => (
+        <li>
+          <a href={l.href} target="_blank" rel="noopener noreferrer" class="chip pub-link">
+            <Icon name={l.icon} width="13" height="13" />
+            <span>{l.label}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</article>
+
+<style>
+  .pub { display: flex; flex-direction: column; gap: 0.5rem; }
+  .pub-head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.25rem;
+  }
+  .year {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    letter-spacing: 0.04em;
+  }
+  .pub-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0;
+  }
+  .pub-authors {
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .pub-authors :global(strong) { color: var(--color-ink); font-weight: 600; }
+  .pub-venue {
+    font-size: 0.88rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+  .pub-abstract {
+    margin-top: 0.4rem;
+    font-size: 0.92rem;
+    color: var(--color-ink-soft);
+  }
+  .pub-abstract summary {
+    cursor: pointer;
+    color: var(--color-accent-strong);
+    font-weight: 500;
+    list-style: none;
+  }
+  .pub-abstract summary::-webkit-details-marker { display: none; }
+  .pub-abstract p { margin-top: 0.6rem; line-height: 1.55; }
+  .pub-links {
+    list-style: none;
+    margin: 0.7rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .pub-link {
+    cursor: pointer;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+  .pub-link:hover {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+</style>

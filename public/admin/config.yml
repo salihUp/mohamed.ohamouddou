@@ -1,0 +1,203 @@
+# Sveltia CMS configuration for Mohamed Ohamouddou's portfolio.
+#
+# In LOCAL mode (recommended during development):
+#   - Run `npm run dev` in one terminal.
+#   - Run `npm run cms` (or `npx decap-server`) in another.
+#   - Open http://localhost:4321/admin/  → edits write straight to disk.
+#
+# In PRODUCTION (after deploying to GitHub Pages):
+#   1. Push the site to a GitHub repository.
+#   2. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
+#        Homepage URL:           https://<USERNAME>.github.io/<REPO>/
+#        Authorization callback: https://<USERNAME>.github.io/<REPO>/admin/
+#   3. Replace `<USERNAME>/<REPO>` and `<GITHUB_OAUTH_CLIENT_ID>` below.
+#   4. Push again. /admin/ now logs in via GitHub PKCE and commits directly.
+
+backend:
+  name: github
+  repo: <USERNAME>/<REPO>
+  branch: main
+  auth_type: pkce
+  client_id: <GITHUB_OAUTH_CLIENT_ID>
+
+# Comment this line out in production once OAuth is wired up.
+local_backend: true
+
+media_folder: public/images
+public_folder: /images
+
+site_url: https://example.github.io
+display_url: https://example.github.io
+logo_url: /favicon.svg
+
+collections:
+  - name: publications
+    label: Publications
+    label_singular: Publication
+    folder: src/content/publications
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{year}}-{{slug}}'
+    summary: '{{year}} — {{title}}'
+    sortable_fields: [year, title, type]
+    fields:
+      - name: type
+        label: Type
+        widget: select
+        options:
+          - { label: 'Article (journal)',  value: article }
+          - { label: 'Conférence',         value: inproceedings }
+          - { label: 'Workshop',           value: workshop }
+          - { label: 'Chapitre de livre',  value: incollection }
+          - { label: 'Livre',              value: book }
+          - { label: 'Thèse de doctorat',  value: phdthesis }
+          - { label: 'Mémoire de master',  value: mastersthesis }
+          - { label: 'Rapport technique',  value: techreport }
+          - { label: 'Preprint / divers',  value: misc }
+      - { name: title,    label: Titre,                widget: string }
+      - { name: authors,  label: Auteurs,              widget: string,
+          hint: 'Format BibTeX : "Ohamouddou, Mohamed and Doe, Jane"' }
+      - { name: year,     label: Année,                widget: number, value_type: int, min: 1980, max: 2100 }
+      - { name: venue,    label: 'Revue / Conférence', widget: string, required: false }
+      - { name: publisher,label: Éditeur,              widget: string, required: false }
+      - { name: volume,   label: Volume,               widget: string, required: false }
+      - { name: number,   label: Numéro,               widget: string, required: false }
+      - { name: pages,    label: Pages,                widget: string, required: false }
+      - { name: doi,      label: DOI,                  widget: string, required: false }
+      - { name: url,      label: URL,                  widget: string, required: false }
+      - { name: pdf,      label: 'Lien PDF',           widget: string, required: false }
+      - { name: arxiv,    label: 'URL arXiv',          widget: string, required: false }
+      - { name: code,     label: 'Repo de code',       widget: string, required: false }
+      - { name: slides,   label: 'Slides URL',         widget: string, required: false }
+      - { name: abstract_fr, label: 'Résumé (FR)',     widget: text, required: false }
+      - { name: abstract_en, label: 'Abstract (EN)',   widget: text, required: false }
+      - { name: featured, label: 'Mis en avant sur l''accueil', widget: boolean, default: false }
+
+  - name: courses
+    label: Enseignements
+    label_singular: Cours
+    folder: src/content/courses
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{year_start}}-{{slug}}'
+    summary: '{{year_start}} — {{title_fr}}'
+    sortable_fields: [year_start, level]
+    fields:
+      - { name: title_fr, label: 'Titre (FR)',     widget: string }
+      - { name: title_en, label: 'Title (EN)',     widget: string }
+      - { name: institution, label: Institution,   widget: string }
+      - name: level
+        label: Niveau
+        widget: select
+        options: [L1, L2, L3, M1, M2, PhD, Other]
+      - name: semester
+        label: Semestre
+        widget: select
+        options: [Fall, Spring, 'Full year', Summer]
+      - { name: year_start, label: 'Année de début', widget: number, value_type: int, min: 1990, max: 2100 }
+      - { name: year_end,   label: 'Année de fin',   widget: number, value_type: int, required: false }
+      - { name: syllabus_url, label: 'Lien Drive (dossier des supports)', widget: string, required: false,
+          hint: 'Coller le lien de partage du dossier Google Drive contenant les PDFs du cours.' }
+      - { name: description_fr, label: 'Description (FR)', widget: text, required: false }
+      - { name: description_en, label: 'Description (EN)', widget: text, required: false }
+
+  - name: activities
+    label: 'Activités scientifiques'
+    label_singular: Activité
+    folder: src/content/activities
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{year}}-{{slug}}'
+    summary: '{{date}} — {{title_fr}}'
+    sortable_fields: [date, type]
+    fields:
+      - { name: title_fr, label: 'Titre (FR)', widget: string }
+      - { name: title_en, label: 'Title (EN)', widget: string }
+      - name: type
+        label: Type
+        widget: select
+        options: [conference, workshop, seminar, summer-school, school, other]
+      - { name: location, label: Lieu, widget: string }
+      - { name: date, label: Date, widget: datetime }
+      - name: role
+        label: Rôle
+        widget: select
+        default: attendee
+        options: [attendee, speaker, organizer, reviewer, co-chair]
+      - { name: url, label: URL, widget: string, required: false }
+      - { name: notes_fr, label: 'Notes (FR)', widget: text, required: false }
+      - { name: notes_en, label: 'Notes (EN)', widget: text, required: false }
+
+  - name: projects
+    label: Projets
+    label_singular: Projet
+    folder: src/content/projects
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{slug}}'
+    summary: '{{title_fr}}'
+    fields:
+      - { name: title_fr, label: 'Titre (FR)', widget: string }
+      - { name: title_en, label: 'Title (EN)', widget: string }
+      - { name: description_fr, label: 'Description (FR)', widget: text }
+      - { name: description_en, label: 'Description (EN)', widget: text }
+      - name: tech
+        label: Tech
+        widget: list
+        default: []
+        field: { name: t, label: Tech, widget: string }
+      - { name: repo, label: 'URL Repo', widget: string, required: false }
+      - { name: demo, label: 'URL Demo', widget: string, required: false }
+      - { name: image, label: 'Chemin image', widget: string, required: false }
+      - { name: featured, label: 'Mis en avant', widget: boolean, default: false }
+      - { name: order, label: Ordre, widget: number, value_type: int, default: 0 }
+
+  - name: blog_fr
+    label: 'Blog (FR)'
+    label_singular: Article
+    folder: src/content/blog/fr
+    create: true
+    extension: mdx
+    format: frontmatter
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    summary: '{{date}} — {{title}}'
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Titre, widget: string }
+      - { name: date, label: Date, widget: datetime }
+      - { name: excerpt, label: Extrait, widget: text }
+      - name: tags
+        label: Tags
+        widget: list
+        default: []
+        field: { name: tag, label: Tag, widget: string }
+      - { name: cover, label: Cover, widget: image, required: false }
+      - { name: draft, label: Brouillon, widget: boolean, default: false }
+      - { name: body, label: Contenu, widget: markdown }
+
+  - name: blog_en
+    label: 'Blog (EN)'
+    label_singular: Post
+    folder: src/content/blog/en
+    create: true
+    extension: mdx
+    format: frontmatter
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    summary: '{{date}} — {{title}}'
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: Date, widget: datetime }
+      - { name: excerpt, label: Excerpt, widget: text }
+      - name: tags
+        label: Tags
+        widget: list
+        default: []
+        field: { name: tag, label: Tag, widget: string }
+      - { name: cover, label: Cover, widget: image, required: false }
+      - { name: draft, label: Draft, widget: boolean, default: false }
+      - { name: body, label: Content, widget: markdown }

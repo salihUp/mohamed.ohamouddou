@@ -1,0 +1,39 @@
+---
+interface Props {
+  text: string;
+}
+const { text } = Astro.props;
+---
+
+<p class="greeting">
+  <span>{text}</span>
+  <span class="wave" aria-hidden="true">👋</span>
+</p>
+
+<style>
+  .greeting {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 1rem;
+    color: var(--color-ink-soft);
+    margin-bottom: 1.1rem;
+    font-weight: 500;
+  }
+  .wave {
+    display: inline-block;
+    transform-origin: 70% 70%;
+    animation: wave 2.6s ease-in-out infinite;
+  }
+  @keyframes wave {
+    0%, 60%, 100% { transform: rotate(0); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .wave { animation: none; }
+  }
+</style>

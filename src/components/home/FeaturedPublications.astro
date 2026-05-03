@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import type { Locale } from '~/i18n';
+import { localizedPath, tString } from '~/i18n';
+import Section from '~/components/ui/Section.astro';
+import PublicationCard from '~/components/cards/PublicationCard.astro';
+
+interface Props {
+  locale: Locale;
+  limit?: number;
+}
+
+const { locale, limit = 3 } = Astro.props;
+
+const all = await getCollection('publications');
+const featured = all
+  .filter((e) => e.data.featured)
+  .sort((a, b) => b.data.year - a.data.year);
+const items = (featured.length > 0 ? featured : [...all].sort((a, b) => b.data.year - a.data.year)).slice(0, limit);
+---
+
+{items.length > 0 && (
+  <Section
+    eyebrow={tString(locale, 'publications.eyebrow')}
+    title={tString(locale, 'home.featured.publications')}
+    ctaLabel={tString(locale, 'home.featured.publications.cta')}
+    ctaHref={localizedPath('/publications', locale)}
+  >
+    <div class="grid">
+      {items.map((entry) => <PublicationCard entry={entry} locale={locale} />)}
+    </div>
+  </Section>
+)}
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 720px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
+  }
+</style>

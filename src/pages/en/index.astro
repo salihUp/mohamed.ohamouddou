@@ -1,0 +1,22 @@
+---
+import Base from '~/layouts/Base.astro';
+import Hero from '~/components/hero/Hero.astro';
+import { localizedPath, tString } from '~/i18n';
+
+const locale = 'en' as const;
+---
+
+<Base locale={locale}>
+  <Hero
+    locale={locale}
+    greeting={tString(locale, 'hero.greeting')}
+    before={tString(locale, 'hero.heading.before')}
+    accent={tString(locale, 'hero.heading.accent')}
+    after={tString(locale, 'hero.heading.after')}
+    description={tString(locale, 'hero.description')}
+    primaryCTA={{ label: tString(locale, 'hero.cta.contact'), href: localizedPath('/about#contact', locale) }}
+    secondaryCTA={{ label: tString(locale, 'hero.cta.publications'), href: localizedPath('/publications', locale) }}
+    portrait={`${import.meta.env.BASE_URL}images/portrait.png`}
+    portraitAlt={tString(locale, 'hero.portrait.alt')}
+  />
+</Base>

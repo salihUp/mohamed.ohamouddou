@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '~/layouts/Base.astro';
+import Section from '~/components/ui/Section.astro';
+import PublicationCard from '~/components/cards/PublicationCard.astro';
+import { tString } from '~/i18n';
+import { groupBy } from '~/lib/format';
+
+const locale = 'en' as const;
+
+const all = await getCollection('publications');
+const sorted = [...all].sort((a, b) => b.data.year - a.data.year || a.data.title.localeCompare(b.data.title));
+const grouped = groupBy(sorted, (e) => e.data.year);
+const years = [...grouped.keys()].sort((a, b) => b - a);
+---
+
+<Base
+  locale={locale}
+  title={`${tString(locale, 'publications.title')} — Mohamed Ohamouddou`}
+  description={tString(locale, 'publications.lead')}
+>
+  <Section
+    eyebrow={tString(locale, 'publications.eyebrow')}
+    title={tString(locale, 'publications.title')}
+    lead={tString(locale, 'publications.lead')}
+  >
+    {sorted.length === 0 ? (
+      <p class="empty">{tString(locale, 'publications.empty')}</p>
+    ) : (
+      years.map((year) => (
+        <div class="year-group">
+          <h3 class="year-label">{year}</h3>
+          <div class="grid">
+            {grouped.get(year)!.map((entry) => <PublicationCard entry={entry} locale={locale} />)}
+          </div>
+        </div>
+      ))
+    )}
+  </Section>
+</Base>
+
+<style>
+  .year-group { margin-bottom: 2.25rem; }
+  .year-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0 0 1rem;
+    letter-spacing: 0.06em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 800px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr)); }
+  }
+  .empty {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    border: 1px dashed var(--color-line);
+    padding: 1.25rem;
+    border-radius: var(--radius-card);
+  }
+</style>

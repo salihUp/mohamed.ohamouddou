@@ -1,0 +1,29 @@
+---
+interface Props {
+  before?: string;
+  accent: string;
+  after?: string;
+}
+
+const { before = '', accent, after = '' } = Astro.props;
+
+const afterLines = after.split(/\r?\n/);
+---
+
+<h1 class="display-xl heading">
+  {before && <span>{before}</span>}<span class="accent">{accent}</span>{afterLines.map((line, i) => (
+    <>
+      {i === 0 ? line : <><br />{line}</>}
+    </>
+  ))}
+</h1>
+
+<style>
+  .heading {
+    margin: 0;
+    color: var(--color-ink);
+  }
+  .accent {
+    color: var(--color-accent);
+  }
+</style>
