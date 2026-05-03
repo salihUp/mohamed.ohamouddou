@@ -1,7 +1,7 @@
 ---
 title_fr: "Culture digitale et IA"
 title_en: "Digital Culture and AI"
-institution: "Université"
+institution: "Université Abdelmalek Essaâdi — FP Larache"
 level: "L1"
 semester: "Spring"
 year_start: 2025

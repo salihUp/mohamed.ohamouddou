@@ -1,7 +1,7 @@
 ---
 title_fr: "Intelligence artificielle et innovation technologique"
 title_en: "Artificial Intelligence and Technological Innovation"
-institution: "Université"
+institution: "Université Abdelmalek Essaâdi — FP Larache"
 level: "M1"
 semester: "Fall"
 year_start: 2025

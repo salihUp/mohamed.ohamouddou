@@ -14,46 +14,162 @@ const { entry, locale } = Astro.props;
 const d = entry.data;
 const title = pickLocalized(d, 'title', locale);
 const description = pickLocalized(d, 'description', locale);
-const yearRange = d.year_end ? `${d.year_start}–${d.year_end}` : `${d.year_start}–${tString(locale, 'teaching.present')}`;
+
+const currentYear = new Date().getFullYear();
+const isOngoing = (d.year_end ?? currentYear) >= currentYear;
+const yearShort = (y: number) => String(y).slice(-2);
+const yearLabel = d.year_end
+  ? `${d.year_start}/${yearShort(d.year_end)}`
+  : `${d.year_start}/${yearShort(currentYear)}`;
+const yearSub = d.year_end ? `${d.year_start}–${d.year_end}` : `${d.year_start}–${tString(locale, 'teaching.present')}`;
 ---
 
-<article class="card course">
-  <header class="course-head">
-    <span class="chip">{d.institution}</span>
+<article class="card course" data-ongoing={isOngoing ? 'true' : undefined}>
+  <aside class="course-side">
+    <span class="year">{yearLabel}</span>
+    <span class="year-sub">{yearSub}</span>
     <span class="chip chip-accent">{d.level}</span>
-    <span class="year">{yearRange}</span>
-  </header>
-  <h3 class="course-title">{title}</h3>
-  <p class="course-meta">{tString(locale, `teaching.semester.${d.semester}`)}</p>
-  {description && <p class="course-desc">{description}</p>}
-  {d.syllabus_url && (
-    <a class="course-link" href={d.syllabus_url} target="_blank" rel="noopener noreferrer">
-      <Icon name="simple-icons:googledrive" width="14" height="14" />
-      <span>{tString(locale, 'teaching.syllabus')}</span>
-      <Icon name="lucide:arrow-up-right" width="13" height="13" class="arrow" />
-    </a>
-  )}
+    {isOngoing && (
+      <span class="ongoing">
+        <span class="dot" aria-hidden="true"></span>
+        <span>{tString(locale, 'teaching.semester.' + d.semester)}</span>
+      </span>
+    )}
+  </aside>
+
+  <div class="course-body">
+    <p class="course-meta">
+      <Icon name="lucide:building-2" width="13" height="13" />
+      <span>{d.institution}</span>
+    </p>
+    <h3 class="course-title">{title}</h3>
+    {description && <p class="course-desc">{description}</p>}
+    {d.syllabus_url && (
+      <a class="course-link" href={d.syllabus_url} target="_blank" rel="noopener noreferrer">
+        <Icon name="simple-icons:googledrive" width="14" height="14" />
+        <span>{tString(locale, 'teaching.syllabus')}</span>
+        <Icon name="lucide:arrow-up-right" width="13" height="13" class="arrow" />
+      </a>
+    )}
+  </div>
 </article>
 
 <style>
-  .course { display: flex; flex-direction: column; gap: 0.5rem; }
-  .course-head { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .course {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    position: relative;
+  }
+  .course[data-ongoing]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-card);
+    background: linear-gradient(135deg,
+      color-mix(in srgb, var(--color-accent) 5%, transparent) 0%,
+      transparent 60%);
+    pointer-events: none;
+  }
+  @media (min-width: 720px) {
+    .course { grid-template-columns: 8rem 1fr; gap: 1.5rem; }
+  }
+
+  .course-side {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  @media (min-width: 720px) {
+    .course-side {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+  }
+
   .year {
+    font-weight: 800;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    letter-spacing: -0.045em;
+    line-height: 0.9;
+    color: var(--color-ink);
+    font-feature-settings: 'tnum';
+  }
+  .year-sub {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.7rem;
     color: var(--color-muted);
-    margin-left: auto;
+    letter-spacing: 0.05em;
+  }
+  .ongoing {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+    background: var(--color-ink);
+    color: #fff;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .ongoing .dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
+    animation: pulse-dot 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-accent) 60%, transparent); }
+    50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 0%, transparent); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ongoing .dot { animation: none; }
+  }
+
+  .course-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+  .course-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--color-muted);
+    margin: 0;
+    text-transform: uppercase;
     letter-spacing: 0.04em;
   }
-  .course-title { font-size: 1.1rem; font-weight: 700; line-height: 1.3; margin: 0; }
-  .course-meta { font-size: 0.85rem; color: var(--color-muted); margin: 0; }
-  .course-desc { font-size: 0.95rem; color: var(--color-ink-soft); line-height: 1.55; margin: 0; }
+  .course-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.32;
+    margin: 0;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+  }
+  .course-desc {
+    font-size: 0.95rem;
+    color: var(--color-ink-soft);
+    line-height: 1.55;
+    margin: 0;
+  }
   .course-link {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    margin-top: 0.5rem;
-    padding: 0.35rem 0.7rem 0.35rem 0.55rem;
+    margin-top: 0.4rem;
+    padding: 0.4rem 0.75rem 0.4rem 0.6rem;
     border: 1px solid var(--color-line);
     border-radius: 999px;
     color: var(--color-ink);

@@ -4,11 +4,14 @@ import Base from '~/layouts/Base.astro';
 import Section from '~/components/ui/Section.astro';
 import CourseCard from '~/components/cards/CourseCard.astro';
 import { tString } from '~/i18n';
+import { groupBy } from '~/lib/format';
 
 const locale = 'fr' as const;
 
 const all = await getCollection('courses');
-const sorted = [...all].sort((a, b) => b.data.year_start - a.data.year_start);
+const sorted = [...all].sort((a, b) => b.data.year_start - a.data.year_start || a.data.title_fr.localeCompare(b.data.title_fr));
+const grouped = groupBy(sorted, (e) => e.data.year_start);
+const years = [...grouped.keys()].sort((a, b) => b - a);
 ---
 
 <Base
@@ -24,21 +27,34 @@ const sorted = [...all].sort((a, b) => b.data.year_start - a.data.year_start);
     {sorted.length === 0 ? (
       <p class="empty">{tString(locale, 'teaching.empty')}</p>
     ) : (
-      <div class="grid">
-        {sorted.map((entry) => <CourseCard entry={entry} locale={locale} />)}
-      </div>
+      years.map((year) => (
+        <div class="year-group">
+          <h3 class="year-label">{year}</h3>
+          <div class="grid">
+            {grouped.get(year)!.map((entry) => <CourseCard entry={entry} locale={locale} />)}
+          </div>
+        </div>
+      ))
     )}
   </Section>
 </Base>
 
 <style>
+  .year-group { margin-bottom: 2.25rem; }
+  .year-label {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0 0 1rem;
+    letter-spacing: 0.06em;
+  }
   .grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  @media (min-width: 720px) {
-    .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); }
+  @media (min-width: 800px) {
+    .grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 26rem), 1fr)); }
   }
   .empty {
     color: var(--color-muted);

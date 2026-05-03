@@ -1,7 +1,7 @@
 ---
 title_fr: "Digital Skills — Excel"
 title_en: "Digital Skills — Excel"
-institution: "Université"
+institution: "Université Abdelmalek Essaâdi — FP Larache"
 level: "L3"
 semester: "Fall"
 year_start: 2025
